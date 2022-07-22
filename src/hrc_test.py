@@ -43,6 +43,11 @@ class MyTestCase(unittest.TestCase):
         result = hrc.compile("while(true) { output(input()); }")
         self.assertEqual(["A:", "INBOX", "OUTBOX", "JUMP A"], result)
 
+    def test_assign_number(self):
+        result = hrc.compile("b=0; output(b);")
+        self.assertEqual(["COPYFROM 0", "OUTBOX"], result)
+
+
 
 if __name__ == '__main__':
     unittest.main()

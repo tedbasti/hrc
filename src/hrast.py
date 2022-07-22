@@ -92,6 +92,14 @@ class Assignment(BaseObject):
         else:
             raise Exception("Could not assign value of type without returnValue with object '" + self.value + "'")
 
+class AssignmentVariableToNumber(BaseObject):
+    def __init__(self, variableName, number):
+        self.variableName = variableName.value
+        self.number = number.value
+
+    def compile(self, ctx):
+        ctx.variables[self.variableName] = int(self.number)
+
 class ifConditionNotNull(BaseObject):
     def __init__(self, leftPosition, statements):
         self.leftPosition = leftPosition.value

@@ -5,7 +5,6 @@ import argparse
 
 def generateLexer():
     lg = LexerGenerator()
-    lg.ignore('\s+') #all spaces could be ignored
     lg.add('SEMICOLON', r';')
     lg.add('LPAREN', r'\(')
     lg.add('RPAREN', r'\)')
@@ -21,7 +20,9 @@ def generateLexer():
     lg.add('MINUS', r'\-')
     lg.add('NOT', r'\!')
     lg.add('NULL', r'0')
+    lg.add('NUMBER', r'[0-9]+')
     lg.add('VARIABLE', r'[a-zA-Z_][a-zA-Z0-9_]*')
+    lg.ignore('\s+') #all spaces could be ignored
     return lg.build()
 
 class Context(object):
@@ -50,7 +51,7 @@ def generateParser():
     pg = ParserGenerator(['SEMICOLON', 'INPUT', 'OUTPUT',
                           'LPAREN', 'RPAREN', 'EQUALS', 'VARIABLE',
                           'PLUS', 'MINUS', 'LBRACE', 'RBRACE', 'if',
-                          'NOT', 'NULL', 'WHILE', 'TRUE'])
+                          'NOT', 'NULL', 'WHILE', 'TRUE', 'NUMBER'])
 
     @pg.production('main : statements')
     def main(s):
@@ -107,6 +108,15 @@ def generateParser():
     @pg.production('statement : WHILE LPAREN TRUE RPAREN LBRACE statements RBRACE')
     def statement_while_true(s):
         return hrast.WhileTrue(hrast.Block([s[5]]))
+
+    @pg.production('expr : VARIABLE EQUALS NULL')
+    def expression_variable_gets_number(s):
+        return hrast.AssignmentVariableToNumber(s[0], s[2])
+
+
+    @pg.production('expr : VARIABLE EQUALS NUMBER')
+    def expression_variable_gets_number(s):
+        return hrast.AssignmentVariableToNumber(s[0], s[2])
 
 
     return pg.build()
