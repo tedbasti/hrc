@@ -39,6 +39,10 @@ class MyTestCase(unittest.TestCase):
         result = hrc.compile("x=input();y=input();z=x+y;")
         self.assertEqual(["INPUT", "COPYTO 0", "INPUT", "COPYTO 1", "COPYFROM 0", "ADD 1", "COPYTO 2"], result)
 
+    def test_while_1(self):
+        result = hrc.compile("while(true) { output(input()); }")
+        self.assertEqual(["A:", "INPUT", "OUTPUT", "JMP A"], result)
+
 
 if __name__ == '__main__':
     unittest.main()

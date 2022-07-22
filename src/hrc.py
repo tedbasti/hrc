@@ -13,6 +13,8 @@ def generateLexer():
     lg.add('if', r'if')
     lg.add('INPUT', r'input')
     lg.add('OUTPUT', r'output')
+    lg.add('TRUE', r'true')
+    lg.add('WHILE', r'while')
     lg.add('EQUALS', r'=')
     lg.add('PLUS', r'\+')
     lg.add('MINUS', r'\-')
@@ -47,7 +49,7 @@ def generateParser():
     pg = ParserGenerator(['SEMICOLON', 'INPUT', 'OUTPUT',
                           'LPAREN', 'RPAREN', 'EQUALS', 'VARIABLE',
                           'PLUS', 'MINUS', 'LBRACE', 'RBRACE', 'if',
-                          'NOT', 'NULL'])
+                          'NOT', 'NULL', 'WHILE', 'TRUE'])
 
     @pg.production('main : statements')
     def main(s):
@@ -100,6 +102,11 @@ def generateParser():
     @pg.production('statement : if LPAREN VARIABLE NOT EQUALS NULL RPAREN LBRACE statements RBRACE')
     def statement_if(s):
         return hrast.ifConditionNotNull(s[2], hrast.Block([s[8]]))
+
+    @pg.production('statement : WHILE LPAREN TRUE RPAREN LBRACE statements RBRACE')
+    def statement_while_true(s):
+        return hrast.WhileTrue(hrast.Block([s[5]]))
+
 
     return pg.build()
 

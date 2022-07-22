@@ -117,3 +117,12 @@ class Block(BaseObject):
     def compile(self, ctx):
         for obj in self.value:
             obj.compile(ctx)
+
+class WhileTrue(BaseObject):
+    def __init__(self, statements):
+        self.statements = statements
+    def compile(self, ctx):
+        label = ctx.getNextLabel()
+        ctx.code.append(label + ":")
+        self.statements.compile(ctx)
+        ctx.code.append("JMP " + label)
