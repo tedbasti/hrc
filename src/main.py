@@ -103,12 +103,14 @@ def generateParser():
     return pg.build()
 
 
-if __name__ == '__main__':
+def compile(input):
     lexer = generateLexer()
     parser = generateParser()
-    code = 'x=input(); if (x != 0) { output(x); }'
-    p = parser.parse(lexer.lex(code))
     ctx = Context()
-    p.compile(ctx)
+    parser.parse(lexer.lex(input)).compile(ctx)
+    return ctx.code
+
+if __name__ == '__main__':
+    code = 'x=input(); if (x != 0) { output(x); }'
     print(code)
-    print(ctx.code)
+    print(compile(code))
