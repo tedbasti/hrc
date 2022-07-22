@@ -47,6 +47,9 @@ class MyTestCase(unittest.TestCase):
         result = hrc.compile("b=0; output(b);")
         self.assertEqual(["COPYFROM 0", "OUTBOX"], result)
 
+    def test_if_not_null(self):
+        result = hrc.compile("a=input(); if (a != 0) { output(a); }")
+        self.assertEqual(["INBOX", "COPYTO 0", "COPYFROM 0", "JUMPZ B", "JUMP A", "A:", "COPYFROM 0", "OUTBOX", "B:"], result)
 
 
 if __name__ == '__main__':

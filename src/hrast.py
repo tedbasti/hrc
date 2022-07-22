@@ -109,9 +109,9 @@ class ifConditionNotNull(BaseObject):
         if self.leftPosition in ctx.variables:
             actionLabel = ctx.getNextLabel()
             endLabel = ctx.getNextLabel()
-            ctx.code.append("POP " + str(ctx.variables[self.leftPosition]))
-            ctx.code.append("JNZ " + actionLabel)
-            ctx.code.append("JUMP " + endLabel)
+            ctx.code.append("COPYFROM " + str(ctx.variables[self.leftPosition]))
+            ctx.code.append("JUMPZ " + endLabel)
+            ctx.code.append("JUMP " + actionLabel)
             ctx.code.append(actionLabel + ":")
             self.statements.compile(ctx)
             ctx.code.append(endLabel + ":")
