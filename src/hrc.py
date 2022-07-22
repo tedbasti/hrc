@@ -1,5 +1,6 @@
 from rply import LexerGenerator, ParserGenerator
-import ast
+import hrast
+
 
 def generateLexer():
     lg = LexerGenerator()
@@ -54,11 +55,11 @@ def generateParser():
 
     @pg.production('statements : statements statement')
     def statements(s):
-        return ast.Block(s[0].value + [s[1]])
+        return hrast.Block(s[0].value + [s[1]])
 
     @pg.production('statements : statement')
     def statements_statement(s):
-        return ast.Block([s[0]])
+        return hrast.Block([s[0]])
 
     @pg.production('statement : expr SEMICOLON')
     def statement(s):
@@ -66,39 +67,39 @@ def generateParser():
 
     @pg.production('expr : INPUT LPAREN RPAREN')
     def expression_input(s):
-        return ast.Input()
+        return hrast.Input()
 
     @pg.production('expr : OUTPUT LPAREN expr RPAREN')
     def expression_output(s):
-        return ast.Output(s[2])
+        return hrast.Output(s[2])
 
     @pg.production('expr : VARIABLE')
     def expression_variable(s):
-        return ast.ReadVariable(s[0])
+        return hrast.ReadVariable(s[0])
 
     @pg.production('expr : VARIABLE EQUALS expr')
     def expression_assignment(s):
-        return ast.Assignment(s[0], s[2])
+        return hrast.Assignment(s[0], s[2])
 
     @pg.production('expr : VARIABLE PLUS PLUS')
     def expression_addOne(s):
-        return ast.ReadVariablePlusOne(s[0])
+        return hrast.ReadVariablePlusOne(s[0])
 
     @pg.production('expr : VARIABLE MINUS MINUS')
     def expression_addOne(s):
-        return ast.ReadVariableMinusOne(s[0])
+        return hrast.ReadVariableMinusOne(s[0])
 
     @pg.production('expr : VARIABLE PLUS VARIABLE')
     def expression_add(s):
-        return ast.Addition(s[0], s[2])
+        return hrast.Addition(s[0], s[2])
 
     @pg.production('expr : VARIABLE MINUS VARIABLE')
     def expression_add(s):
-        return ast.Subtraction(s[0], s[2])
+        return hrast.Subtraction(s[0], s[2])
 
     @pg.production('statement : if LPAREN VARIABLE NOT EQUALS NULL RPAREN LBRACE statements RBRACE')
     def statement_if(s):
-        return ast.ifConditionNotNull(s[2], ast.Block([s[8]]))
+        return hrast.ifConditionNotNull(s[2], hrast.Block([s[8]]))
 
     return pg.build()
 
@@ -112,5 +113,6 @@ def compile(input):
 
 if __name__ == '__main__':
     code = 'x=input(); if (x != 0) { output(x); }'
+    #code = "input();"
     print(code)
     print(compile(code))
