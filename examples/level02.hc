@@ -1,0 +1,3 @@
+while(true) {
+  output(input());
+}
