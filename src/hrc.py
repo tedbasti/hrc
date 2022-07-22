@@ -1,5 +1,6 @@
 from rply import LexerGenerator, ParserGenerator
 import hrast
+import argparse
 
 
 def generateLexer():
@@ -119,7 +120,10 @@ def compile(input):
     return ctx.code
 
 if __name__ == '__main__':
-    code = 'x=input(); if (x != 0) { output(x); }'
-    #code = "input();"
-    print(code)
-    print(compile(code))
+    parser = argparse.ArgumentParser()
+    parser.add_argument("inputfile", help="The input file where the hrc code lays")
+    args = parser.parse_args()
+    code = open(args.inputfile, 'r').read()
+    compiled = compile(code)
+    for line in compiled:
+        print(line)
