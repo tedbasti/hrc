@@ -4,7 +4,7 @@ class BaseObject(object):
 
 class Input(BaseObject):
     def compile(self, ctx):
-        ctx.code.append("INPUT")
+        ctx.code.append("INBOX")
     def hasReturnValue(self):
         return True
 
@@ -14,7 +14,7 @@ class Output(BaseObject):
     def compile(self, ctx):
         if self.value.hasReturnValue():
             self.value.compile(ctx)
-            ctx.code.append("OUTPUT")
+            ctx.code.append("OUTBOX")
         else:
             raise Exception("Could not output a value of type without returnValue with object '" + self.value + "'")
 
