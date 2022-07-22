@@ -111,7 +111,7 @@ class ifConditionNotNull(BaseObject):
             endLabel = ctx.getNextLabel()
             ctx.code.append("COPYFROM " + str(ctx.variables[self.leftPosition]))
             ctx.code.append("JUMPZ " + endLabel)
-            ctx.code.append("JUMP " + actionLabel)
+            #ctx.code.append("JUMP " + actionLabel)
             ctx.code.append(actionLabel + ":")
             self.statements.compile(ctx)
             ctx.code.append(endLabel + ":")
