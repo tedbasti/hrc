@@ -75,7 +75,8 @@ class Addition(BaseObject):
             ctx.code.append("COPYFROM " + str(ctx.variables[self.leftObject]))
             ctx.code.append("ADD " + str(ctx.variables[self.rightObject]))
         else:
-            raise Exception("Addition: Variable '" + self.leftObject + "' or variable '" + self.rightObject + "' is undefined")
+            raise Exception("Addition: Variable '" + self.leftObject +
+                            "' or variable '" + self.rightObject + "' is undefined")
 
 
 class Subtraction(BaseObject):
@@ -91,7 +92,8 @@ class Subtraction(BaseObject):
             ctx.code.append("COPYFROM " + str(ctx.variables[self.leftObject]))
             ctx.code.append("SUB " + str(ctx.variables[self.rightObject]))
         else:
-            raise Exception("Subtraction: Variable '" + self.leftObject + "' or variable '" + self.rightObject + "' is undefined")
+            raise Exception("Subtraction: Variable '" + self.leftObject +
+                            "' or variable '" + self.rightObject + "' is undefined")
 
 
 class Assignment(BaseObject):
@@ -132,7 +134,7 @@ class IfConditionNotNull(BaseObject):
             self.statements.compile(ctx)
             ctx.code.append(end_label + ":")
         else:
-            raise Exception("If: Variable '" + self.leftObject + "' is undefined")
+            raise Exception("If: Variable '" + self.leftPosition + "' is undefined")
 
 
 class WhileTrue(BaseObject):

@@ -22,8 +22,10 @@ def generateLexer():
     lg.add('NULL', r'0')
     lg.add('NUMBER', r'[0-9]+')
     lg.add('VARIABLE', r'[a-zA-Z_][a-zA-Z0-9_]*')
-    lg.ignore('\s+') #all spaces could be ignored
+    # Ignore all spaces
+    lg.ignore(r'\s+')
     return lg.build()
+
 
 class Context(object):
     def __init__(self):
@@ -36,7 +38,8 @@ class Context(object):
 
     def getVariablePos(self, varName):
         if varName in self.variables:
-            return self.variables[varName] #return the position of the varName, when exists
+            # return the position of the varName, when exists
+            return self.variables[varName]
         memory_position = self.freeSpacePosition
         self.variables[varName] = memory_position
         self.freeSpacePosition = self.freeSpacePosition + 1
@@ -44,8 +47,9 @@ class Context(object):
 
     def getNextLabel(self):
         nextLabel = self.LABELS[self.currentLabelPosition]
-        self.currentLabelPosition+=1
+        self.currentLabelPosition += 1
         return nextLabel
+
 
 def generateParser():
     pg = ParserGenerator(['SEMICOLON', 'INPUT', 'OUTPUT',
@@ -54,7 +58,7 @@ def generateParser():
                           'NOT', 'NULL', 'WHILE', 'TRUE', 'NUMBER'])
 
     @pg.production('main : statements')
-    def main(s):
+    def main_statement(s):
         return s[0]
 
     @pg.production('statements : statements statement')
@@ -113,23 +117,22 @@ def generateParser():
     def expression_variable_gets_number(s):
         return hrast.AssignmentVariableToNumber(s[0], s[2])
 
-
     @pg.production('expr : VARIABLE EQUALS NUMBER')
     def expression_variable_gets_number(s):
         return hrast.AssignmentVariableToNumber(s[0], s[2])
 
-
     return pg.build()
 
 
-def compile(input):
-    lexer = generateLexer()
-    parser = generateParser()
+def compile(code):
+    l = generateLexer()
+    p = generateParser()
     ctx = Context()
-    parser.parse(lexer.lex(input)).compile(ctx)
+    p.parse(l.lex(code)).compile(ctx)
     return ctx.code
 
-if __name__ == '__main__':
+
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("inputfile", help="The input file where the hrc code lays")
     args = parser.parse_args()
@@ -137,3 +140,7 @@ if __name__ == '__main__':
     compiled = compile(code)
     for line in compiled:
         print(line)
+
+
+if __name__ == '__main__':
+    main()
