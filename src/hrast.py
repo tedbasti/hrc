@@ -91,6 +91,15 @@ class Subtraction(TwoVariablesExpression):
         super().__init__(leftObject, rightObject, "SUB", "Subtraction")
 
 
+class AssignmentToFixMemoryAddress(BaseObject):
+    def __init__(self, variable_name, number):
+        self.variableName = variable_name.value
+        self.number = number.value
+
+    def compile(self, ctx):
+        ctx.variables[self.variableName] = int(self.number)
+
+
 class Assignment(BaseObject):
     def __init__(self, name, value):
         self.name = name.value
@@ -105,15 +114,6 @@ class Assignment(BaseObject):
             ctx.code.append("COPYTO " + str(ctx.getVariablePos(self.name)))
         else:
             raise Exception("Could not assign value of type without returnValue with object '" + self.value + "'")
-
-
-class AssignmentToFixMemoryAddress(BaseObject):
-    def __init__(self, variable_name, number):
-        self.variableName = variable_name.value
-        self.number = number.value
-
-    def compile(self, ctx):
-        ctx.variables[self.variableName] = int(self.number)
 
 
 class IfConditionNotNull(BaseObject):

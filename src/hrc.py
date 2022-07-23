@@ -85,25 +85,30 @@ def generateParser():
     def expression_variable(s):
         return hrast.ReadVariable(s[0])
 
-    @pg.production('expr : VARIABLE EQUALS expr')
-    def expression_assignment(s):
-        return hrast.Assignment(s[0], s[2])
-
     @pg.production('expr : VARIABLE PLUS PLUS')
-    def expression_addOne(s):
+    def expression_add_one(s):
         return hrast.ReadVariablePlusOne(s[0])
 
     @pg.production('expr : VARIABLE MINUS MINUS')
-    def expression_addOne(s):
+    def expression_subtract_one(s):
         return hrast.ReadVariableMinusOne(s[0])
 
     @pg.production('expr : VARIABLE PLUS VARIABLE')
-    def expression_add(s):
+    def expression_addition(s):
         return hrast.Addition(s[0], s[2])
 
     @pg.production('expr : VARIABLE MINUS VARIABLE')
-    def expression_add(s):
+    def expression_subtraction(s):
         return hrast.Subtraction(s[0], s[2])
+
+    @pg.production('expr : VARIABLE EQUALS NULL')
+    @pg.production('expr : VARIABLE EQUALS NUMBER')
+    def expression_variable_to_fix_memory_address(s):
+        return hrast.AssignmentToFixMemoryAddress(s[0], s[2])
+
+    @pg.production('expr : VARIABLE EQUALS expr')
+    def expression_assignment(s):
+        return hrast.Assignment(s[0], s[2])
 
     @pg.production('statement : IF LPAREN VARIABLE NOT EQUALS NULL RPAREN LBRACE statements RBRACE')
     def statement_if(s):
@@ -112,11 +117,6 @@ def generateParser():
     @pg.production('statement : WHILE LPAREN TRUE RPAREN LBRACE statements RBRACE')
     def statement_while_true(s):
         return hrast.WhileTrue(hrast.Block([s[5]]))
-
-    @pg.production('expr : VARIABLE EQUALS NULL')
-    @pg.production('expr : VARIABLE EQUALS NUMBER')
-    def expression_variable_gets_number(s):
-        return hrast.AssignmentToFixMemoryAddress(s[0], s[2])
 
     return pg.build()
 
