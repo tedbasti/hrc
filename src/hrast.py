@@ -2,21 +2,35 @@ class BaseObject(object):
     def hasReturnValue(self):
         return False
 
+
+class Block(BaseObject):
+    def __init__(self, value):
+        self.value = value
+
+    def compile(self, ctx):
+        for obj in self.value:
+            obj.compile(ctx)
+
+
 class Input(BaseObject):
     def compile(self, ctx):
         ctx.code.append("INBOX")
+
     def hasReturnValue(self):
         return True
+
 
 class Output(BaseObject):
     def __init__(self, value):
         self.value = value
+
     def compile(self, ctx):
         if self.value.hasReturnValue():
             self.value.compile(ctx)
             ctx.code.append("OUTBOX")
         else:
             raise Exception("Could not output a value of type without returnValue with object '" + self.value + "'")
+
 
 class BasicVariable(BaseObject):
     def __init__(self, name, command):
@@ -46,6 +60,7 @@ class ReadVariablePlusOne(BasicVariable):
 class ReadVariableMinusOne(BasicVariable):
     def __init__(self, name):
         super().__init__(name, "BUMPDN")
+
 
 class Addition(BaseObject):
     def __init__(self, leftObject, rightObject):
@@ -78,10 +93,12 @@ class Subtraction(BaseObject):
         else:
             raise Exception("Subtraction: Variable '" + self.leftObject + "' or variable '" + self.rightObject + "' is undefined")
 
+
 class Assignment(BaseObject):
     def __init__(self, name, value):
         self.name = name.value
         self.value = value
+
     def hasReturnValue(self):
         return True
 
@@ -92,6 +109,7 @@ class Assignment(BaseObject):
         else:
             raise Exception("Could not assign value of type without returnValue with object '" + self.value + "'")
 
+
 class AssignmentVariableToNumber(BaseObject):
     def __init__(self, variableName, number):
         self.variableName = variableName.value
@@ -99,6 +117,7 @@ class AssignmentVariableToNumber(BaseObject):
 
     def compile(self, ctx):
         ctx.variables[self.variableName] = int(self.number)
+
 
 class ifConditionNotNull(BaseObject):
     def __init__(self, leftPosition, statements):
@@ -118,13 +137,6 @@ class ifConditionNotNull(BaseObject):
         else:
             raise Exception("If: Variable '" + self.leftObject + "' is undefined")
 
-
-class Block(BaseObject):
-    def __init__(self, value):
-        self.value = value
-    def compile(self, ctx):
-        for obj in self.value:
-            obj.compile(ctx)
 
 class WhileTrue(BaseObject):
     def __init__(self, statements):
