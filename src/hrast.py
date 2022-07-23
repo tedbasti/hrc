@@ -120,20 +120,17 @@ class AssignmentVariableToNumber(BaseObject):
 
 
 class IfConditionNotNull(BaseObject):
-    def __init__(self, leftPosition, statements):
-        self.leftPosition = leftPosition.value
+    def __init__(self, left_position, statements):
+        self.leftPosition = left_position.value
         self.statements = statements
 
     def compile(self, ctx):
         if self.leftPosition in ctx.variables:
-            actionLabel = ctx.getNextLabel()
-            endLabel = ctx.getNextLabel()
+            end_label = ctx.getNextLabel()
             ctx.code.append("COPYFROM " + str(ctx.variables[self.leftPosition]))
-            ctx.code.append("JUMPZ " + endLabel)
-            #ctx.code.append("JUMP " + actionLabel)
-            ctx.code.append(actionLabel + ":")
+            ctx.code.append("JUMPZ " + end_label)
             self.statements.compile(ctx)
-            ctx.code.append(endLabel + ":")
+            ctx.code.append(end_label + ":")
         else:
             raise Exception("If: Variable '" + self.leftObject + "' is undefined")
 
