@@ -74,7 +74,7 @@ def generateParser():
         return s[0]
 
     @pg.production('expr : INPUT LPAREN RPAREN')
-    def expression_input(s):
+    def expression_input(_):
         return hrast.Input()
 
     @pg.production('expr : OUTPUT LPAREN expr RPAREN')
