@@ -10,7 +10,7 @@ def generateLexer():
     lg.add('RPAREN', r'\)')
     lg.add('LBRACE', r'\{')
     lg.add('RBRACE', r'\}')
-    lg.add('if', r'if')
+    lg.add('IF', r'if')
     lg.add('INPUT', r'input')
     lg.add('OUTPUT', r'output')
     lg.add('TRUE', r'true')
@@ -50,7 +50,7 @@ class Context(object):
 def generateParser():
     pg = ParserGenerator(['SEMICOLON', 'INPUT', 'OUTPUT',
                           'LPAREN', 'RPAREN', 'EQUALS', 'VARIABLE',
-                          'PLUS', 'MINUS', 'LBRACE', 'RBRACE', 'if',
+                          'PLUS', 'MINUS', 'LBRACE', 'RBRACE', 'IF',
                           'NOT', 'NULL', 'WHILE', 'TRUE', 'NUMBER'])
 
     @pg.production('main : statements')
@@ -101,7 +101,7 @@ def generateParser():
     def expression_add(s):
         return hrast.Subtraction(s[0], s[2])
 
-    @pg.production('statement : if LPAREN VARIABLE NOT EQUALS NULL RPAREN LBRACE statements RBRACE')
+    @pg.production('statement : IF LPAREN VARIABLE NOT EQUALS NULL RPAREN LBRACE statements RBRACE')
     def statement_if(s):
         return hrast.ifConditionNotNull(s[2], hrast.Block([s[8]]))
 
