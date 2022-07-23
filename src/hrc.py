@@ -114,12 +114,9 @@ def generateParser():
         return hrast.WhileTrue(hrast.Block([s[5]]))
 
     @pg.production('expr : VARIABLE EQUALS NULL')
-    def expression_variable_gets_number(s):
-        return hrast.AssignmentVariableToNumber(s[0], s[2])
-
     @pg.production('expr : VARIABLE EQUALS NUMBER')
     def expression_variable_gets_number(s):
-        return hrast.AssignmentVariableToNumber(s[0], s[2])
+        return hrast.AssignmentToFixMemoryAddress(s[0], s[2])
 
     return pg.build()
 

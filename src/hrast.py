@@ -107,7 +107,7 @@ class Assignment(BaseObject):
             raise Exception("Could not assign value of type without returnValue with object '" + self.value + "'")
 
 
-class AssignmentVariableToNumber(BaseObject):
+class AssignmentToFixMemoryAddress(BaseObject):
     def __init__(self, variable_name, number):
         self.variableName = variable_name.value
         self.number = number.value
