@@ -110,9 +110,13 @@ def generateParser():
     def expression_assignment(s):
         return hrast.Assignment(s[0], s[2])
 
+    @pg.production('statement : IF LPAREN VARIABLE EQUALS EQUALS NULL RPAREN LBRACE statements RBRACE')
+    def statement_if_equals_null(s):
+        return hrast.IfEqualsNull(s[2], hrast.Block([s[8]]))
+
     @pg.production('statement : IF LPAREN VARIABLE NOT EQUALS NULL RPAREN LBRACE statements RBRACE')
-    def statement_if(s):
-        return hrast.IfConditionNotNull(s[2], hrast.Block([s[8]]))
+    def statement_if_not_null(s):
+        return hrast.IfNotEqualsNull(s[2], hrast.Block([s[8]]))
 
     @pg.production('statement : WHILE LPAREN TRUE RPAREN LBRACE statements RBRACE')
     def statement_while_true(s):

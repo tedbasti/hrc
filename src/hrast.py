@@ -116,7 +116,7 @@ class Assignment(BaseObject):
             raise Exception("Could not assign value of type without returnValue with object '" + self.value + "'")
 
 
-class IfConditionNotNull(BaseObject):
+class IfNotEqualsNull(BaseObject):
     def __init__(self, left_position, statements):
         self.leftPosition = left_position.value
         self.statements = statements
@@ -126,6 +126,25 @@ class IfConditionNotNull(BaseObject):
             end_label = ctx.getNextLabel()
             ctx.code.append("COPYFROM " + str(ctx.variables[self.leftPosition]))
             ctx.code.append("JUMPZ " + end_label)
+            self.statements.compile(ctx)
+            ctx.code.append(end_label + ":")
+        else:
+            raise Exception("If: Variable '" + self.leftPosition + "' is undefined")
+
+
+class IfEqualsNull(BaseObject):
+    def __init__(self, left_position, statements):
+        self.leftPosition = left_position.value
+        self.statements = statements
+
+    def compile(self, ctx):
+        if self.leftPosition in ctx.variables:
+            action_label = ctx.getNextLabel()
+            end_label = ctx.getNextLabel()
+            ctx.code.append("COPYFROM " + str(ctx.variables[self.leftPosition]))
+            ctx.code.append("JUMPZ " + action_label)
+            ctx.code.append("JUMP " + end_label)
+            ctx.code.append(action_label + ":")
             self.statements.compile(ctx)
             ctx.code.append(end_label + ":")
         else:
