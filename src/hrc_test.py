@@ -31,6 +31,14 @@ class MyTestCase(unittest.TestCase):
         result = hrc.compile("x=input();output(x--);")
         self.assertEqual(["INBOX", "COPYTO 0", "BUMPDN 0", "OUTBOX"], result)
 
+    def test_compile_output_subtraction_of_two_variables(self):
+        result = hrc.compile("x=input();y=input();output(x-y);")
+        self.assertEqual(["INBOX", "COPYTO 0", "INBOX", "COPYTO 1", "COPYFROM 0", "SUB 1", "OUTBOX"], result)
+
+    def test_compile_sub_two_input_variables(self):
+        result = hrc.compile("x=input();y=input();z=x-y;")
+        self.assertEqual(["INBOX", "COPYTO 0", "INBOX", "COPYTO 1", "COPYFROM 0", "SUB 1", "COPYTO 2"], result)
+
     def test_compile_output_addition_of_two_variables(self):
         result = hrc.compile("x=input();y=input();output(x+y);")
         self.assertEqual(["INBOX", "COPYTO 0", "INBOX", "COPYTO 1", "COPYFROM 0", "ADD 1", "OUTBOX"], result)

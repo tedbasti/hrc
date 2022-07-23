@@ -62,10 +62,12 @@ class ReadVariableMinusOne(BasicVariable):
         super().__init__(name, "BUMPDN")
 
 
-class Addition(BaseObject):
-    def __init__(self, leftObject, rightObject):
-        self.leftObject = leftObject.value
-        self.rightObject = rightObject.value
+class TwoVariablesExpression(BaseObject):
+    def __init__(self, left_object, right_object, command, exception_name):
+        self.leftObject = left_object.value
+        self.rightObject = right_object.value
+        self.command = command
+        self.exceptionName = exception_name
 
     def hasReturnValue(self):
         return True
@@ -73,27 +75,20 @@ class Addition(BaseObject):
     def compile(self, ctx):
         if self.leftObject in ctx.variables and self.rightObject in ctx.variables:
             ctx.code.append("COPYFROM " + str(ctx.variables[self.leftObject]))
-            ctx.code.append("ADD " + str(ctx.variables[self.rightObject]))
+            ctx.code.append(self.command + " " + str(ctx.variables[self.rightObject]))
         else:
-            raise Exception("Addition: Variable '" + self.leftObject +
+            raise Exception(self.exceptionName + ": Variable '" + self.leftObject +
                             "' or variable '" + self.rightObject + "' is undefined")
 
 
-class Subtraction(BaseObject):
+class Addition(TwoVariablesExpression):
     def __init__(self, leftObject, rightObject):
-        self.leftObject = leftObject.value
-        self.rightObject = rightObject.value
+        super().__init__(leftObject, rightObject, "ADD", "Addition")
 
-    def hasReturnValue(self):
-        return True
 
-    def compile(self, ctx):
-        if self.leftObject in ctx.variables and self.rightObject in ctx.variables:
-            ctx.code.append("COPYFROM " + str(ctx.variables[self.leftObject]))
-            ctx.code.append("SUB " + str(ctx.variables[self.rightObject]))
-        else:
-            raise Exception("Subtraction: Variable '" + self.leftObject +
-                            "' or variable '" + self.rightObject + "' is undefined")
+class Subtraction(TwoVariablesExpression):
+    def __init__(self, leftObject, rightObject):
+        super().__init__(leftObject, rightObject, "SUB", "Subtraction")
 
 
 class Assignment(BaseObject):
