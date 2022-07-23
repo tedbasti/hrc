@@ -111,8 +111,8 @@ class Assignment(BaseObject):
 
 
 class AssignmentVariableToNumber(BaseObject):
-    def __init__(self, variableName, number):
-        self.variableName = variableName.value
+    def __init__(self, variable_name, number):
+        self.variableName = variable_name.value
         self.number = number.value
 
     def compile(self, ctx):
@@ -138,6 +138,7 @@ class IfConditionNotNull(BaseObject):
 class WhileTrue(BaseObject):
     def __init__(self, statements):
         self.statements = statements
+
     def compile(self, ctx):
         label = ctx.getNextLabel()
         ctx.code.append(label + ":")
