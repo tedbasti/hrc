@@ -119,7 +119,7 @@ class AssignmentVariableToNumber(BaseObject):
         ctx.variables[self.variableName] = int(self.number)
 
 
-class ifConditionNotNull(BaseObject):
+class IfConditionNotNull(BaseObject):
     def __init__(self, leftPosition, statements):
         self.leftPosition = leftPosition.value
         self.statements = statements
