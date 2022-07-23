@@ -51,14 +51,13 @@ class MyTestCase(unittest.TestCase):
         result = hrc.compile("a=input(); if (a != 0) { output(a); }")
         self.assertEqual(["INBOX", "COPYTO 0", "COPYFROM 0", "JUMPZ A", "COPYFROM 0", "OUTBOX", "A:"], result)
 
-    def test_nexted_if(self):
+    def test_nested_if(self):
         result = hrc.compile("a=input(); b=input(); if (a != 0) { if(b != 0) { output(a); } }")
         self.assertEqual(["INBOX", "COPYTO 0", "INBOX", "COPYTO 1",
                           "COPYFROM 0", "JUMPZ A",  #first if
                           "COPYFROM 1", "JUMPZ B",
                           "COPYFROM 0", "OUTBOX", "B:", "A:"],
                          result)
-
 
 
 if __name__ == '__main__':
