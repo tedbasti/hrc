@@ -81,6 +81,14 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(["INBOX", "COPYTO 0", "COPYFROM 0", "JUMPN B",
                           "JUMP A", "B:", "COPYFROM 0", "OUTBOX", "A:"], result)
 
+    def test_if_zero_else(self):
+        result = hrc.compile("a=0; b=1; if (a != 0) { output(a); } else { output(b); }")
+        self.assertEqual(["COPYFROM 0", "JUMPZ B",
+                          "COPYFROM 0", "OUTBOX", "JUMP A",  # if statement
+                          "B:", "COPYFROM 1", "OUTBOX",  # else statement
+                          "A:"], result)
+
+
 
 if __name__ == '__main__':
     unittest.main()

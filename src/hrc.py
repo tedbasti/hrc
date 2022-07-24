@@ -11,6 +11,7 @@ def generateLexer():
     lg.add('LBRACE', r'\{')
     lg.add('RBRACE', r'\}')
     lg.add('IF', r'if')
+    lg.add('ELSE', r'else')
     lg.add('INPUT', r'input')
     lg.add('OUTPUT', r'output')
     lg.add('TRUE', r'true')
@@ -58,7 +59,7 @@ def generateParser():
                           'LPAREN', 'RPAREN', 'EQUALS', 'VARIABLE',
                           'PLUS', 'MINUS', 'LBRACE', 'RBRACE', 'IF',
                           'NOT', 'NULL', 'WHILE', 'TRUE', 'NUMBER',
-                          'BIGGER', 'SMALLER'])
+                          'BIGGER', 'SMALLER', 'ELSE'])
 
     @pg.production('main : statements')
     def main_statement(s):
@@ -113,8 +114,12 @@ def generateParser():
     def expression_assignment(s):
         return hrast.Assignment(s[0], s[2])
 
+    @pg.production('statement : IF LPAREN comparison RPAREN LBRACE statements RBRACE ELSE LBRACE statements RBRACE')
+    def statement_if_with_else(s):
+        return hrast.If(s[2], hrast.Block([s[5]]), hrast.Block([s[9]]))
+
     @pg.production('statement : IF LPAREN comparison RPAREN LBRACE statements RBRACE')
-    def statement_if_not_null(s):
+    def statement_if(s):
         return hrast.If(s[2], hrast.Block([s[5]]), hrast.BaseObject())
 
     @pg.production('comparison : VARIABLE SMALLER VARIABLE')
