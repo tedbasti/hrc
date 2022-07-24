@@ -114,9 +114,15 @@ def generateParser():
     def statement_if_equals_null(s):
         return hrast.IfEqualsNull(s[2], hrast.Block([s[8]]))
 
-    @pg.production('statement : IF LPAREN VARIABLE NOT EQUALS NULL RPAREN LBRACE statements RBRACE')
+    @pg.production('statement : IF LPAREN comparison RPAREN LBRACE statements RBRACE')
     def statement_if_not_null(s):
-        return hrast.IfNotEqualsNull(s[2], hrast.Block([s[8]]))
+        #return hrast.IfNotEqualsNull(s[2], hrast.Block([s[8]]))
+        return hrast.If(s[2], hrast.Block([s[5]]), hrast.BaseObject())
+
+    @pg.production('comparison : VARIABLE NOT EQUALS NULL')
+    def comparison_not_equals_null(s):
+        return hrast.Comparison(s[1].value + s[2].value, s[0], s[3])
+
 
     @pg.production('statement : WHILE LPAREN TRUE RPAREN LBRACE statements RBRACE')
     def statement_while_true(s):

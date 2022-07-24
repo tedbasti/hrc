@@ -2,6 +2,9 @@ class BaseObject(object):
     def hasReturnValue(self):
         return False
 
+    def compile(self, ctx):
+        pass
+
 
 class Block(BaseObject):
     def __init__(self, value):
@@ -149,6 +152,49 @@ class IfEqualsNull(BaseObject):
             ctx.code.append(end_label + ":")
         else:
             raise Exception("If: Variable '" + self.leftPosition + "' is undefined")
+
+
+class If(BaseObject):
+    def __init__(self, comparison, statement_if, statement_else):
+        self.comparison = comparison
+        self.statement_if = statement_if
+        self.statement_else = statement_else
+
+    def compile(self, ctx):
+        self.comparison.compile(ctx, self.statement_if, self.statement_else)
+
+
+class Comparison(BaseObject):
+    def __init__(self, compare_string, left_operand, right_operand):
+        self.compare_string = compare_string
+        self.left_operand = left_operand.value
+        self.right_operand = right_operand.value
+        self.compare_functions = \
+            {"!=": "JUMPZ"}
+
+    def compile(self, ctx, if_statements, else_statements):
+        if self.left_operand not in ctx.variables:
+            raise Exception("Variable '" + self.left_operand + "' is undefined")
+        ctx.code.append("COPYFROM " + str(ctx.variables[self.left_operand]))
+        if isinstance(self.right_operand, BasicVariable):
+            ctx.code.append(" " + str(ctx.variables[self.right_operand]))
+            if self.right_operand not in ctx.variables:
+                raise Exception("Variable '" + self.right_operand + "' is undefined")
+        end_label = ctx.getNextLabel()
+        # example for '!=': JUMPZ else_label
+        if isinstance(else_statements, Block):
+            else_label = ctx.getNextLabel()
+            ctx.code.append(self.compare_functions[self.compare_string] + " " + else_label)
+        else:
+            ctx.code.append(self.compare_functions[self.compare_string] + " " + end_label)
+        # block of statements from the outer side
+        if_statements.compile(ctx)
+        if isinstance(else_statements, Block):
+            ctx.code.append("JUMP " + end_label)
+            #else_label
+            ctx.code.append(else_label + ":")
+            else_statements.compile(ctx)
+        ctx.code.append(end_label + ":")
 
 
 class WhileTrue(BaseObject):
