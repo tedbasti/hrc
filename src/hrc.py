@@ -122,6 +122,10 @@ def generateParser():
     def statement_if(s):
         return hrast.If(s[2], hrast.Block([s[5]]), hrast.BaseObject())
 
+    @pg.production('statement : WHILE LPAREN comparison RPAREN LBRACE statements RBRACE')
+    def statement_while(s):
+        return hrast.While(s[2], hrast.Block([s[5]]))
+
     @pg.production('comparison : VARIABLE SMALLER VARIABLE')
     @pg.production('comparison : VARIABLE SMALLER NULL')
     def comparison_not_equals_null(s):

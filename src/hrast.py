@@ -156,6 +156,34 @@ class If(BaseObject):
             compile_if_logic(">=", self.statement_else, self.statement_if, ctx)
 
 
+class Goto(BaseObject):
+    def __init__(self, label):
+        self.label = label
+
+    def compile(self, ctx):
+        ctx.code.append("JUMP " + self.label)
+
+
+class While(BaseObject):
+    def __init__(self, comparison, statement):
+        self.comparison = comparison
+        self.statement = statement
+
+    def compile(self, ctx):
+        # Ensure that the right thing is within the register
+        begin_label = ctx.getNextLabel()
+        ctx.code.append(begin_label + ":")
+        self.comparison.compile(ctx)
+        #else_statement = Block([Goto(begin_label)])
+        else_statement = Goto(begin_label)
+        if self.comparison.compare_string == "!=" or self.comparison.compare_string == ">=":
+            compile_if_logic(self.comparison.compare_string, self.statement, else_statement, ctx)
+        elif self.comparison.compare_string == "==":
+            compile_if_logic("!=", else_statement, self.statement, ctx)
+        elif self.comparison.compare_string == "<":
+            compile_if_logic(">=", else_statement, self.statement, ctx)
+
+
 class Comparison(BaseObject):
     def __init__(self, compare_string, left_operand, right_operand):
         self.compare_string = compare_string
