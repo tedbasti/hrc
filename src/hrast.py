@@ -120,13 +120,16 @@ class Assignment(BaseObject):
 
 
 def compile_if_logic(compare_string, if_statements, else_statements, ctx):
-    if compare_string == "!=":
+    if compare_string == "!=" or compare_string == ">=":
+        command = "JUMPZ"
+        if compare_string == ">=":
+            command = "JUMPN"
         end_label = ctx.getNextLabel()
         if isinstance(else_statements, Block):
             else_label = ctx.getNextLabel()
-            ctx.code.append("JUMPZ " + else_label)
+            ctx.code.append(command + " " + else_label)
         else:
-            ctx.code.append("JUMPZ " + end_label)
+            ctx.code.append(command + " " + end_label)
         if_statements.compile(ctx)
         if isinstance(else_statements, Block):
             ctx.code.append("JUMP " + end_label)
@@ -145,10 +148,12 @@ class If(BaseObject):
     def compile(self, ctx):
         # Ensure that the right thing is within the register
         self.comparison.compile(ctx)
-        if self.comparison.compare_string == "!=":
+        if self.comparison.compare_string == "!=" or self.comparison.compare_string == ">=":
             compile_if_logic(self.comparison.compare_string, self.statement_if, self.statement_else, ctx)
         elif self.comparison.compare_string == "==":
             compile_if_logic("!=", self.statement_else, self.statement_if, ctx)
+        elif self.comparison.compare_string == "<":
+            compile_if_logic(">=", self.statement_else, self.statement_if, ctx)
 
 
 class Comparison(BaseObject):

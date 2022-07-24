@@ -19,6 +19,8 @@ def generateLexer():
     lg.add('PLUS', r'\+')
     lg.add('MINUS', r'\-')
     lg.add('NOT', r'\!')
+    lg.add('BIGGER', r'\>')
+    lg.add('SMALLER', r'\<')
     lg.add('NULL', r'0')
     lg.add('NUMBER', r'[0-9]+')
     lg.add('VARIABLE', r'[a-zA-Z_][a-zA-Z0-9_]*')
@@ -55,7 +57,8 @@ def generateParser():
     pg = ParserGenerator(['SEMICOLON', 'INPUT', 'OUTPUT',
                           'LPAREN', 'RPAREN', 'EQUALS', 'VARIABLE',
                           'PLUS', 'MINUS', 'LBRACE', 'RBRACE', 'IF',
-                          'NOT', 'NULL', 'WHILE', 'TRUE', 'NUMBER'])
+                          'NOT', 'NULL', 'WHILE', 'TRUE', 'NUMBER',
+                          'BIGGER', 'SMALLER'])
 
     @pg.production('main : statements')
     def main_statement(s):
@@ -109,21 +112,20 @@ def generateParser():
     @pg.production('expr : VARIABLE EQUALS expr')
     def expression_assignment(s):
         return hrast.Assignment(s[0], s[2])
-    #
-    # @pg.production('statement : IF LPAREN VARIABLE EQUALS EQUALS NULL RPAREN LBRACE statements RBRACE')
-    # def statement_if_equals_null(s):
-    #     return hrast.IfEqualsNull(s[2], hrast.Block([s[8]]))
 
     @pg.production('statement : IF LPAREN comparison RPAREN LBRACE statements RBRACE')
     def statement_if_not_null(s):
-        #return hrast.IfNotEqualsNull(s[2], hrast.Block([s[8]]))
         return hrast.If(s[2], hrast.Block([s[5]]), hrast.BaseObject())
 
+    @pg.production('comparison : VARIABLE SMALLER NULL')
+    def comparison_not_equals_null(s):
+        return hrast.Comparison(s[1].value, s[0], s[2])
+
+    @pg.production('comparison : VARIABLE BIGGER EQUALS NULL')
     @pg.production('comparison : VARIABLE NOT EQUALS NULL')
     @pg.production('comparison : VARIABLE EQUALS EQUALS NULL')
     def comparison_not_equals_null(s):
         return hrast.Comparison(s[1].value + s[2].value, s[0], s[3])
-
 
     @pg.production('statement : WHILE LPAREN TRUE RPAREN LBRACE statements RBRACE')
     def statement_while_true(s):

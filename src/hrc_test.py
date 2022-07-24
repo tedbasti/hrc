@@ -72,6 +72,15 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(["INBOX", "COPYTO 0", "COPYFROM 0", "JUMPZ B",
                           "JUMP A", "B:", "COPYFROM 0", "OUTBOX", "A:"], result)
 
+    def test_if_bigger_or_equals(self):
+        result = hrc.compile("a=input(); if (a >= 0) { output(a); }")
+        self.assertEqual(["INBOX", "COPYTO 0", "COPYFROM 0", "JUMPN A", "COPYFROM 0", "OUTBOX", "A:"], result)
+
+    def test_if_negative(self):
+        result = hrc.compile("a=input(); if (a < 0) { output(a); }")
+        self.assertEqual(["INBOX", "COPYTO 0", "COPYFROM 0", "JUMPN B",
+                          "JUMP A", "B:", "COPYFROM 0", "OUTBOX", "A:"], result)
+
 
 if __name__ == '__main__':
     unittest.main()
