@@ -166,10 +166,10 @@ class Comparison(BaseObject):
         if self.left_operand not in ctx.variables:
             raise Exception("Variable '" + self.left_operand + "' is undefined")
         ctx.code.append("COPYFROM " + str(ctx.variables[self.left_operand]))
-        if isinstance(self.right_operand, BasicVariable):
-            ctx.code.append(" " + str(ctx.variables[self.right_operand]))
+        if self.right_operand != '0':
             if self.right_operand not in ctx.variables:
                 raise Exception("Variable '" + self.right_operand + "' is undefined")
+            ctx.code.append("SUB " + str(ctx.variables[self.right_operand]))
 
 
 class WhileTrue(BaseObject):

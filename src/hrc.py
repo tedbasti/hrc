@@ -117,10 +117,14 @@ def generateParser():
     def statement_if_not_null(s):
         return hrast.If(s[2], hrast.Block([s[5]]), hrast.BaseObject())
 
+    @pg.production('comparison : VARIABLE SMALLER VARIABLE')
     @pg.production('comparison : VARIABLE SMALLER NULL')
     def comparison_not_equals_null(s):
         return hrast.Comparison(s[1].value, s[0], s[2])
 
+    @pg.production('comparison : VARIABLE BIGGER EQUALS VARIABLE')
+    @pg.production('comparison : VARIABLE NOT EQUALS VARIABLE')
+    @pg.production('comparison : VARIABLE EQUALS EQUALS VARIABLE')
     @pg.production('comparison : VARIABLE BIGGER EQUALS NULL')
     @pg.production('comparison : VARIABLE NOT EQUALS NULL')
     @pg.production('comparison : VARIABLE EQUALS EQUALS NULL')
