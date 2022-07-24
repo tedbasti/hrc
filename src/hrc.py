@@ -109,10 +109,10 @@ def generateParser():
     @pg.production('expr : VARIABLE EQUALS expr')
     def expression_assignment(s):
         return hrast.Assignment(s[0], s[2])
-
-    @pg.production('statement : IF LPAREN VARIABLE EQUALS EQUALS NULL RPAREN LBRACE statements RBRACE')
-    def statement_if_equals_null(s):
-        return hrast.IfEqualsNull(s[2], hrast.Block([s[8]]))
+    #
+    # @pg.production('statement : IF LPAREN VARIABLE EQUALS EQUALS NULL RPAREN LBRACE statements RBRACE')
+    # def statement_if_equals_null(s):
+    #     return hrast.IfEqualsNull(s[2], hrast.Block([s[8]]))
 
     @pg.production('statement : IF LPAREN comparison RPAREN LBRACE statements RBRACE')
     def statement_if_not_null(s):
@@ -120,6 +120,7 @@ def generateParser():
         return hrast.If(s[2], hrast.Block([s[5]]), hrast.BaseObject())
 
     @pg.production('comparison : VARIABLE NOT EQUALS NULL')
+    @pg.production('comparison : VARIABLE EQUALS EQUALS NULL')
     def comparison_not_equals_null(s):
         return hrast.Comparison(s[1].value + s[2].value, s[0], s[3])
 

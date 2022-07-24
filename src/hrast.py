@@ -119,39 +119,21 @@ class Assignment(BaseObject):
             raise Exception("Could not assign value of type without returnValue with object '" + self.value + "'")
 
 
-class IfNotEqualsNull(BaseObject):
-    def __init__(self, left_position, statements):
-        self.leftPosition = left_position.value
-        self.statements = statements
-
-    def compile(self, ctx):
-        if self.leftPosition in ctx.variables:
-            end_label = ctx.getNextLabel()
-            ctx.code.append("COPYFROM " + str(ctx.variables[self.leftPosition]))
+def compile_if_logic(compare_string, if_statements, else_statements, ctx):
+    if compare_string == "!=":
+        end_label = ctx.getNextLabel()
+        if isinstance(else_statements, Block):
+            else_label = ctx.getNextLabel()
+            ctx.code.append("JUMPZ " + else_label)
+        else:
             ctx.code.append("JUMPZ " + end_label)
-            self.statements.compile(ctx)
-            ctx.code.append(end_label + ":")
-        else:
-            raise Exception("If: Variable '" + self.leftPosition + "' is undefined")
-
-
-class IfEqualsNull(BaseObject):
-    def __init__(self, left_position, statements):
-        self.leftPosition = left_position.value
-        self.statements = statements
-
-    def compile(self, ctx):
-        if self.leftPosition in ctx.variables:
-            action_label = ctx.getNextLabel()
-            end_label = ctx.getNextLabel()
-            ctx.code.append("COPYFROM " + str(ctx.variables[self.leftPosition]))
-            ctx.code.append("JUMPZ " + action_label)
+        if_statements.compile(ctx)
+        if isinstance(else_statements, Block):
             ctx.code.append("JUMP " + end_label)
-            ctx.code.append(action_label + ":")
-            self.statements.compile(ctx)
-            ctx.code.append(end_label + ":")
-        else:
-            raise Exception("If: Variable '" + self.leftPosition + "' is undefined")
+            # else_label
+            ctx.code.append(else_label + ":")
+        else_statements.compile(ctx)
+        ctx.code.append(end_label + ":")
 
 
 class If(BaseObject):
@@ -159,26 +141,14 @@ class If(BaseObject):
         self.comparison = comparison
         self.statement_if = statement_if
         self.statement_else = statement_else
-        self.compare_functions = \
-            {"!=": "JUMPZ"}
 
     def compile(self, ctx):
+        # Ensure that the right thing is within the register
         self.comparison.compile(ctx)
-        end_label = ctx.getNextLabel()
-        # example for '!=': JUMPZ else_label
-        if isinstance(self.statement_else, Block):
-            else_label = ctx.getNextLabel()
-            ctx.code.append(self.compare_functions[self.comparison.compare_string] + " " + else_label)
-        else:
-            ctx.code.append(self.compare_functions[self.comparison.compare_string] + " " + end_label)
-        # block of statements from the outer side
-        self.statement_if.compile(ctx)
-        if isinstance(self.statement_else, Block):
-            ctx.code.append("JUMP " + end_label)
-            #else_label
-            ctx.code.append(else_label + ":")
-            self.statement_else.compile(ctx)
-        ctx.code.append(end_label + ":")
+        if self.comparison.compare_string == "!=":
+            compile_if_logic(self.comparison.compare_string, self.statement_if, self.statement_else, ctx)
+        elif self.comparison.compare_string == "==":
+            compile_if_logic("!=", self.statement_else, self.statement_if, ctx)
 
 
 class Comparison(BaseObject):
