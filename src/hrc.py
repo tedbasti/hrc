@@ -27,6 +27,7 @@ def generateLexer():
     lg.add('VARIABLE', r'[a-zA-Z_][a-zA-Z0-9_]*')
     # Ignore all spaces
     lg.ignore(r'\s+')
+    lg.ignore(r'\/\/[^\n]*\n')
     return lg.build()
 
 
