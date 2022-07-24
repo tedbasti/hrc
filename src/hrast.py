@@ -174,7 +174,6 @@ class While(BaseObject):
         begin_label = ctx.getNextLabel()
         ctx.code.append(begin_label + ":")
         self.comparison.compile(ctx)
-        #else_statement = Block([Goto(begin_label)])
         else_statement = Goto(begin_label)
         if self.comparison.compare_string == "!=" or self.comparison.compare_string == ">=":
             compile_if_logic(self.comparison.compare_string, self.statement, else_statement, ctx)
