@@ -159,9 +159,26 @@ class If(BaseObject):
         self.comparison = comparison
         self.statement_if = statement_if
         self.statement_else = statement_else
+        self.compare_functions = \
+            {"!=": "JUMPZ"}
 
     def compile(self, ctx):
-        self.comparison.compile(ctx, self.statement_if, self.statement_else)
+        self.comparison.compile(ctx)
+        end_label = ctx.getNextLabel()
+        # example for '!=': JUMPZ else_label
+        if isinstance(self.statement_else, Block):
+            else_label = ctx.getNextLabel()
+            ctx.code.append(self.compare_functions[self.comparison.compare_string] + " " + else_label)
+        else:
+            ctx.code.append(self.compare_functions[self.comparison.compare_string] + " " + end_label)
+        # block of statements from the outer side
+        self.statement_if.compile(ctx)
+        if isinstance(self.statement_else, Block):
+            ctx.code.append("JUMP " + end_label)
+            #else_label
+            ctx.code.append(else_label + ":")
+            self.statement_else.compile(ctx)
+        ctx.code.append(end_label + ":")
 
 
 class Comparison(BaseObject):
@@ -169,10 +186,8 @@ class Comparison(BaseObject):
         self.compare_string = compare_string
         self.left_operand = left_operand.value
         self.right_operand = right_operand.value
-        self.compare_functions = \
-            {"!=": "JUMPZ"}
 
-    def compile(self, ctx, if_statements, else_statements):
+    def compile(self, ctx):
         if self.left_operand not in ctx.variables:
             raise Exception("Variable '" + self.left_operand + "' is undefined")
         ctx.code.append("COPYFROM " + str(ctx.variables[self.left_operand]))
@@ -180,21 +195,6 @@ class Comparison(BaseObject):
             ctx.code.append(" " + str(ctx.variables[self.right_operand]))
             if self.right_operand not in ctx.variables:
                 raise Exception("Variable '" + self.right_operand + "' is undefined")
-        end_label = ctx.getNextLabel()
-        # example for '!=': JUMPZ else_label
-        if isinstance(else_statements, Block):
-            else_label = ctx.getNextLabel()
-            ctx.code.append(self.compare_functions[self.compare_string] + " " + else_label)
-        else:
-            ctx.code.append(self.compare_functions[self.compare_string] + " " + end_label)
-        # block of statements from the outer side
-        if_statements.compile(ctx)
-        if isinstance(else_statements, Block):
-            ctx.code.append("JUMP " + end_label)
-            #else_label
-            ctx.code.append(else_label + ":")
-            else_statements.compile(ctx)
-        ctx.code.append(end_label + ":")
 
 
 class WhileTrue(BaseObject):
