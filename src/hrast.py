@@ -1,5 +1,5 @@
 class BaseObject(object):
-    def hasReturnValue(self):
+    def has_return_value(self):
         return False
 
     def compile(self, ctx):
@@ -19,7 +19,7 @@ class Input(BaseObject):
     def compile(self, ctx):
         ctx.code.append("INBOX")
 
-    def hasReturnValue(self):
+    def has_return_value(self):
         return True
 
 
@@ -28,7 +28,7 @@ class Output(BaseObject):
         self.value = value
 
     def compile(self, ctx):
-        if self.value.hasReturnValue():
+        if self.value.has_return_value():
             self.value.compile(ctx)
             ctx.code.append("OUTBOX")
         else:
@@ -40,7 +40,7 @@ class BasicVariable(BaseObject):
         self.name = name.value
         self.command = command
 
-    def hasReturnValue(self):
+    def has_return_value(self):
         return True
 
     def compile(self, ctx):
@@ -72,7 +72,7 @@ class TwoVariablesExpression(BaseObject):
         self.command = command
         self.exceptionName = exception_name
 
-    def hasReturnValue(self):
+    def has_return_value(self):
         return True
 
     def compile(self, ctx):
@@ -85,13 +85,13 @@ class TwoVariablesExpression(BaseObject):
 
 
 class Addition(TwoVariablesExpression):
-    def __init__(self, leftObject, rightObject):
-        super().__init__(leftObject, rightObject, "ADD", "Addition")
+    def __init__(self, left_object, right_object):
+        super().__init__(left_object, right_object, "ADD", "Addition")
 
 
 class Subtraction(TwoVariablesExpression):
-    def __init__(self, leftObject, rightObject):
-        super().__init__(leftObject, rightObject, "SUB", "Subtraction")
+    def __init__(self, left_object, right_object):
+        super().__init__(left_object, right_object, "SUB", "Subtraction")
 
 
 class AssignmentToFixMemoryAddress(BaseObject):
@@ -108,11 +108,11 @@ class Assignment(BaseObject):
         self.name = name.value
         self.value = value
 
-    def hasReturnValue(self):
+    def has_return_value(self):
         return True
 
     def compile(self, ctx):
-        if self.value.hasReturnValue():
+        if self.value.has_return_value():
             self.value.compile(ctx)
             ctx.code.append("COPYTO " + str(ctx.getVariablePos(self.name)))
         else:
