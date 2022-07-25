@@ -108,9 +108,10 @@ class AssignmentToFixMemoryAddress(BaseObject):
 
 
 class Assignment(BaseObject):
-    def __init__(self, name, value):
+    def __init__(self, name, value, is_pointer=False):
         self.name = name.value
         self.value = value
+        self.is_pointer = is_pointer
 
     def has_return_value(self):
         return True
@@ -118,7 +119,10 @@ class Assignment(BaseObject):
     def compile(self, ctx):
         if self.value.has_return_value():
             self.value.compile(ctx)
-            ctx.code.append("COPYTO " + str(ctx.getVariablePos(self.name)))
+            if self.is_pointer:
+                ctx.code.append("COPYTO [" + str(ctx.getVariablePos(self.name)) + "]")
+            else:
+                ctx.code.append("COPYTO " + str(ctx.getVariablePos(self.name)))
         else:
             raise Exception("Could not assign value of type without returnValue with object '" + self.value + "'")
 

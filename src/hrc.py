@@ -124,6 +124,10 @@ def generateParser():
     def expression_variable_to_fix_memory_address(s):
         return hrast.AssignmentToFixMemoryAddress(s[0], s[2])
 
+    @pg.production('expr : STAR VARIABLE EQUALS expr')
+    def expression_assignment(s):
+        return hrast.Assignment(s[1], s[3], True)
+
     @pg.production('expr : VARIABLE EQUALS expr')
     def expression_assignment(s):
         return hrast.Assignment(s[0], s[2])
