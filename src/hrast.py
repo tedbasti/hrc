@@ -135,7 +135,7 @@ def compile_if_logic(compare_string, if_statements, else_statements, ctx):
             ctx.code.append("JUMP " + end_label)
             # else_label
             ctx.code.append(else_label + ":")
-        else_statements.compile(ctx)
+            else_statements.compile(ctx)
         ctx.code.append(end_label + ":")
 
 
@@ -174,7 +174,9 @@ class While(BaseObject):
         begin_label = ctx.getNextLabel()
         ctx.code.append(begin_label + ":")
         self.comparison.compile(ctx)
-        else_statement = Goto(begin_label)
+        # Append the JUMP begin_label at the end of the statements
+        self.statement.value.append(Goto(begin_label))
+        else_statement = BaseObject()
         if self.comparison.compare_string == "!=" or self.comparison.compare_string == ">=":
             compile_if_logic(self.comparison.compare_string, self.statement, else_statement, ctx)
         elif self.comparison.compare_string == "==":

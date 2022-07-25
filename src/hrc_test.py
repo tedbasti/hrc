@@ -96,8 +96,17 @@ class MyTestCase(unittest.TestCase):
         result = hrc.compile("a=0; while( a != 0 ) { output(a); }")
         self.assertEqual(["A:", "COPYFROM 0", "JUMPZ B", "COPYFROM 0", "OUTBOX", "JUMP A", "B:"], result)
 
+    def test_while_bigger_equals_zero(self):
+        result = hrc.compile("a=0; while( a >= 0 ) { output(a); }")
+        self.assertEqual(["A:", "COPYFROM 0", "JUMPN B", "COPYFROM 0", "OUTBOX", "JUMP A", "B:"], result)
 
-
+    def test_while_smaller_zero(self):
+        result = hrc.compile("a=0; while( a < 0 ) { output(a); }")
+        self.assertEqual(["A:", "COPYFROM 0",  # Load variable
+                          "JUMPN C",
+                          "JUMP B",  # else
+                          "C:", "COPYFROM 0", "OUTBOX", "JUMP A",  # if
+                          "B:"], result)
 
 
 if __name__ == '__main__':

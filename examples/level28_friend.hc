@@ -18,6 +18,7 @@ while(true) {
             c = b;
             b = tmp;
         }
+        counter++;
     }
     output(a);
     output(b);
