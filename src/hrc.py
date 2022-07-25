@@ -24,6 +24,7 @@ def generateLexer():
     lg.add('SMALLER', r'\<')
     lg.add('NULL', r'0')
     lg.add('NUMBER', r'[0-9]+')
+    lg.add('STAR', r'\*')
     lg.add('VARIABLE', r'[a-zA-Z_][a-zA-Z0-9_]*')
     # Ignore all spaces
     lg.ignore(r'\s+')
@@ -60,7 +61,7 @@ def generateParser():
                           'LPAREN', 'RPAREN', 'EQUALS', 'VARIABLE',
                           'PLUS', 'MINUS', 'LBRACE', 'RBRACE', 'IF',
                           'NOT', 'NULL', 'WHILE', 'TRUE', 'NUMBER',
-                          'BIGGER', 'SMALLER', 'ELSE'])
+                          'BIGGER', 'SMALLER', 'ELSE', 'STAR'])
 
     @pg.production('main : statements')
     def main_statement(s):
@@ -89,6 +90,10 @@ def generateParser():
     @pg.production('expr : VARIABLE')
     def expression_variable(s):
         return hrast.ReadVariable(s[0])
+
+    @pg.production('expr : STAR VARIABLE')
+    def expression_variable(s):
+        return hrast.ReadVariable(s[1], True)
 
     @pg.production('expr : VARIABLE PLUS PLUS')
     def expression_add_one(s):

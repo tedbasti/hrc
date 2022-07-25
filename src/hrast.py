@@ -36,33 +36,37 @@ class Output(BaseObject):
 
 
 class BasicVariable(BaseObject):
-    def __init__(self, name, command):
+    def __init__(self, name, command, is_pointer=False):
         self.name = name.value
         self.command = command
+        self.is_pointer = is_pointer
 
     def has_return_value(self):
         return True
 
     def compile(self, ctx):
         if self.name in ctx.variables:
-            ctx.code.append(self.command + " " + str(ctx.variables[self.name]))
+            if self.is_pointer:
+                ctx.code.append(self.command + " [" + str(ctx.variables[self.name]) + "]")
+            else:
+                ctx.code.append(self.command + " " + str(ctx.variables[self.name]))
         else:
             raise Exception("Variable '" + self.name + "' is not defined")
 
 
 class ReadVariable(BasicVariable):
-    def __init__(self, name):
-        super().__init__(name, "COPYFROM")
+    def __init__(self, name, is_pointer=False):
+        super().__init__(name, "COPYFROM", is_pointer)
 
 
 class ReadVariablePlusOne(BasicVariable):
-    def __init__(self, name):
-        super().__init__(name, "BUMPUP")
+    def __init__(self, name, is_pointer=False):
+        super().__init__(name, "BUMPUP", is_pointer)
 
 
 class ReadVariableMinusOne(BasicVariable):
-    def __init__(self, name):
-        super().__init__(name, "BUMPDN")
+    def __init__(self, name, is_pointer=False):
+        super().__init__(name, "BUMPDN", is_pointer)
 
 
 class TwoVariablesExpression(BaseObject):

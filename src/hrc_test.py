@@ -108,6 +108,11 @@ class MyTestCase(unittest.TestCase):
                           "C:", "COPYFROM 0", "OUTBOX", "JUMP A",  # if
                           "B:"], result)
 
+    def test_read_with_start(self):
+        result = hrc.compile("a=0; output(*a);")
+        self.assertEqual(["COPYFROM [0]", "OUTBOX"], result)
+
+
 
 if __name__ == '__main__':
     unittest.main()
