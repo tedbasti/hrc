@@ -112,6 +112,14 @@ class MyTestCase(unittest.TestCase):
         result = hrc.compile("a=0; output(*a);")
         self.assertEqual(["COPYFROM [0]", "OUTBOX"], result)
 
+    def test_increase_with_start(self):
+        result = hrc.compile("a=0; (*a)++;")
+        self.assertEqual(["BUMPUP [0]"], result)
+
+    def test_decrease_with_start(self):
+        result = hrc.compile("a=0; (*a)--;")
+        self.assertEqual(["BUMPDN [0]"], result)
+
 
 
 if __name__ == '__main__':

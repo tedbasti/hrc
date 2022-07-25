@@ -99,9 +99,17 @@ def generateParser():
     def expression_add_one(s):
         return hrast.ReadVariablePlusOne(s[0])
 
+    @pg.production('expr : LPAREN STAR VARIABLE RPAREN PLUS PLUS')
+    def expression_add_one_pointer(s):
+        return hrast.ReadVariablePlusOne(s[2], True)
+
     @pg.production('expr : VARIABLE MINUS MINUS')
     def expression_subtract_one(s):
         return hrast.ReadVariableMinusOne(s[0])
+
+    @pg.production('expr : LPAREN STAR VARIABLE RPAREN MINUS MINUS')
+    def expression_subtract_one_pointer(s):
+        return hrast.ReadVariableMinusOne(s[2], True)
 
     @pg.production('expr : VARIABLE PLUS VARIABLE')
     def expression_addition(s):
