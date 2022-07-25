@@ -120,6 +120,11 @@ class MyTestCase(unittest.TestCase):
         result = hrc.compile("a=0; (*a)--;")
         self.assertEqual(["BUMPDN [0]"], result)
 
+    def test_pointer_not_equals_zero(self):
+        result = hrc.compile("a=0; if (*a != 0) { output(a); }")
+        self.assertEqual(["COPYFROM [0]", "JUMPZ A", "COPYFROM 0", "OUTBOX", "A:"], result)
+
+
 
 
 if __name__ == '__main__':

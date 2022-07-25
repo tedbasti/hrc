@@ -190,15 +190,19 @@ class While(BaseObject):
 
 
 class Comparison(BaseObject):
-    def __init__(self, compare_string, left_operand, right_operand):
+    def __init__(self, compare_string, left_operand, right_operand, is_pointer=False):
         self.compare_string = compare_string
         self.left_operand = left_operand.value
         self.right_operand = right_operand.value
+        self.is_pointer = is_pointer
 
     def compile(self, ctx):
         if self.left_operand not in ctx.variables:
             raise Exception("Variable '" + self.left_operand + "' is undefined")
-        ctx.code.append("COPYFROM " + str(ctx.variables[self.left_operand]))
+        if self.is_pointer:
+            ctx.code.append("COPYFROM [" + str(ctx.variables[self.left_operand]) + "]")
+        else:
+            ctx.code.append("COPYFROM " + str(ctx.variables[self.left_operand]))
         if self.right_operand != '0':
             if self.right_operand not in ctx.variables:
                 raise Exception("Variable '" + self.right_operand + "' is undefined")

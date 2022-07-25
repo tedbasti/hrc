@@ -140,10 +140,24 @@ def generateParser():
     def statement_while(s):
         return hrast.While(s[2], hrast.Block([s[5]]))
 
+    @pg.production('comparison : STAR VARIABLE SMALLER VARIABLE')
+    @pg.production('comparison : STAR VARIABLE SMALLER NULL')
+    def comparison_not_equals_null_pointer(s):
+        return hrast.Comparison(s[2].value, s[1], s[3], True)
+
     @pg.production('comparison : VARIABLE SMALLER VARIABLE')
     @pg.production('comparison : VARIABLE SMALLER NULL')
     def comparison_not_equals_null(s):
         return hrast.Comparison(s[1].value, s[0], s[2])
+
+    @pg.production('comparison : STAR VARIABLE BIGGER EQUALS VARIABLE')
+    @pg.production('comparison : STAR VARIABLE NOT EQUALS VARIABLE')
+    @pg.production('comparison : STAR VARIABLE EQUALS EQUALS VARIABLE')
+    @pg.production('comparison : STAR VARIABLE BIGGER EQUALS NULL')
+    @pg.production('comparison : STAR VARIABLE NOT EQUALS NULL')
+    @pg.production('comparison : STAR VARIABLE EQUALS EQUALS NULL')
+    def comparison_not_equals_null(s):
+        return hrast.Comparison(s[2].value + s[3].value, s[1], s[4], True)
 
     @pg.production('comparison : VARIABLE BIGGER EQUALS VARIABLE')
     @pg.production('comparison : VARIABLE NOT EQUALS VARIABLE')
